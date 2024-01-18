@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Joy's Café Search UI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    input {
+      padding: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h2>Joy's Café Search UI</h2>
+
+  <label for="searchTerm">Search Café:</label>
+  <input type="text" id="searchTerm" oninput="searchCafes()">
+
+  <table id="resultTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+      </tr>
+    </thead>
+    <tbody id="resultTableBody"></tbody>
+  </table>
+
+  <script>
+   async function getCafes() {
+  const response = await fetch('https://raw.githubusercontent.com/debojyoti/places-fake-rest-api/master/cafes.json');
+  const data = await response.json();
+  return data.cafes;  // Extract 'cafes' array from the response
+}
+
+async function getPlaces() {
+  const response = await fetch('https://raw.githubusercontent.com/debojyoti/places-fake-rest-api/master/places.json');
+  const data = await response.json();
+  return data.places;  // Extract 'places' array from the response
+}
+
+
+    async function searchCafes() {
+      const searchTerm = document.getElementById("searchTerm").value.toLowerCase();
+      const cafes = await getCafes();
+      const places = await getPlaces();
+      const results = filterCafes(cafes, places, searchTerm);
+      renderTable(results);
+    }
+
+    function filterCafes(cafes, places, searchTerm) {
+  return cafes
+    .filter(cafe => cafe.name.toLowerCase().includes(searchTerm))
+    .map(cafe => {
+      const place = places.find(place => place.id === cafe.location_id);
+      return {
+        name: cafe.name,
+        street_no: place.street_no,
+        locality: place.locality,
+        postal_code: place.postal_code,
+        lat: place.lat,
+        long: place.long
+      };
+    });
+}
+
+
+
+    function renderTable(markSheets) {
+      const tableBody = document.getElementById("resultTableBody");
+      tableBody.innerHTML = '';
+
+      markSheets.forEach((markSheet) => {
+        const row = document.createElement("tr");
+
+        Object.keys(markSheet).forEach((key) => {
+          const cell = document.createElement("td");
+          cell.textContent = markSheet[key];
+          row.appendChild(cell);
+        });
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Load cafes on page load
+    document.addEventListener('DOMContentLoaded', async () => {
+  const cafes = await getCafes();
+  const places = await getPlaces();
+  const results = cafes.map(cafe => {
+    const place = places.find(place => place.id === cafe.location_id);
+    return {
+      name: cafe.name,
+      street_no: place.street_no,
+      locality: place.locality,
+      postal_code: place.postal_code,
+      lat: place.lat,
+      long: place.long
+    };
+  });
+  renderTable(results);
+});
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+/* Dashboard.css */
+
+.dashboard {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .overview {
+    width: 30%;
+    padding: 20px;
+    border: 1px solid #ccc;
+  }
+  
+  .employee-list {
+    width: 65%;
+    padding: 20px;
+    border: 1px solid #ccc;
+  }
+  
